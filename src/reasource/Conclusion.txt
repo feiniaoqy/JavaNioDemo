@@ -1,0 +1,71 @@
+Java NIO 学习:
+阻塞和非阻塞的区别：
+阻塞就是干不完不准回来，   
+非阻塞就是你先干，我现看看有其他事没有，完了告诉我一声
+
+Java NIO与IO的区别：
+对于IO：
+    1、面向的是数据流
+    2、是阻塞型的
+对于NIO:
+    1、面向的是缓冲
+    2、是非阻塞型的
+    3、有选择器
+
+核心部分组成：
+    Channels:
+        FileChannel 从文件中读写数据。
+        DatagramChannel 能通过UDP读写网络中的数据。
+        SocketChannel 能通过TCP读写网络中的数据。
+        ServerSocketChannel可以监听新进来的TCP连接，像Web服务器那样。对每一个新进来的连接都会创建一个SocketChannel。
+
+    Buffer是一个抽象类，它的继承者有以下几种，分别对应的是Java中的基本数据类型
+        ByteBuffer
+        CharBuffer
+        DoubleBuffer
+        FloatBuffer
+        IntBuffer
+        LongBuffer
+        ShortBuffer
+        还有个 MappedByteBuffer，用于表示内存映射文件
+        clear()方法会清空整个缓冲区;
+        compact()方法只会清除已经读过的数据.
+        三个属性：capacity、position、limit
+        capacity:表示buffer的容量
+        position:当你写数据到Buffer中时，position表示当前的位置。初始的position值为0.当一个byte、long等数据写到Buffer后，
+            position会向前移动到下一个可插入数据的Buffer单元。position最大可为capacity – 1.
+            当读取数据时，也是从某个特定位置读。当将Buffer从写模式切换到读模式，position会被重置为0. 当从Buffer的position
+            处读取数据时，position向前移动到下一个可读的位置。
+        limit:在写模式下，Buffer的limit表示你最多能往Buffer里写多少数据。 写模式下，limit等于Buffer的capacity。
+            当切换Buffer到读模式时,limit表示你最多能读到多少数据。因此，当切换Buffer到读模式时，limit会被设置成写模式下的position值。
+            换句话说，你能读到之前写入的所有数据（limit被设置成已写数据的数量，这个值在写模式下就是position）
+
+        buffer读数据：
+            从Channel写到Buffer的例子：int bytesRead = inChannel.read(buf);
+            通过put方法写Buffer的例子：buf.put(127);
+        buffer写数据：
+            从Buffer读取数据到Channel的例子：int bytesWritten = inChannel.write(buf);
+            使用get()方法从Buffer中读取数据的例子：byte aByte = buf.get();
+
+    scatter/gather:
+        分散（scatter）从Channel中读取是指在读操作时将读取的数据写入多个buffer中.
+        聚集（gather）写入Channel是指在写操作时将多个buffer的数据写入同一个Channel.
+    Selectors是Java NIO中能够检测一到多个NIO通道，并能够知晓通道是否为诸如读写事件做好准备的组件。
+    这样，一个单独的线程可以管理多个channel，从而管理多个网络连接。
+        创建Selector:Selector selector = Selector.open();
+        在Selector上注册通道：
+            注：首先要保证Channel是非阻塞的，由于FileChannel是阻塞的所已不能用Selector
+            SelectionKey key = channel.register(selector, Selectionkey.OP_READ);
+    Pipe有一个source通道和一个sink通道。数据会被写到sink通道，从source通道读取。
+
+
+Channels与Streams的区别：
+    对于Channels可读可写；对于Streams只能单向的读或写
+    Channels的读写是异步的
+
+RandomAccessFile直接继承Object的，独立的类。
+是用来访问那些保存数据记录的文件的，
+你就可以用seek( )方法来访问记录，并进行读写了。
+这些记录的大小不必相同；但是其大小和位置必须是可知的。但是该类仅限于操作文件。
+
+

@@ -1,0 +1,1 @@
+hi,我是要从Buffer写到Channel中
